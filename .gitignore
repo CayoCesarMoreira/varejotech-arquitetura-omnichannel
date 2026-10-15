@@ -1,0 +1,38 @@
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+$RECYCLE.BIN/
+
+# IDEs / editores
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.antigravity/
+.gemini/
+
+# Dependências e builds (caso o projeto evolua)
+node_modules/
+dist/
+build/
+.venv/
+venv/
+__pycache__/
+
+# Logs, temporários e segredos
+*.log
+*.tmp
+*.bak
+.env
+.env.*
+
+# Arquivos temporários de teste
+test_tmp.html
+dom*.html
+err*.txt
+
+# Obs.: index.html, styles.css, app.js, README.md e os PDFs de documentação
+# do projeto são versionados (não ignorar *.pdf).

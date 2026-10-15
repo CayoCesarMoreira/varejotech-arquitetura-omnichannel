@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VarejoTech Omnichannel — Arquitetura Corporativa TO-BE | ArchCorp</title>
+  <meta name="description" content="Protótipo visual interativo da Arquitetura TO-BE (Etapa 3) da VarejoTech Omnichannel: simulador de venda omnichannel, Cliente 360°, Hub de Estoque Redis e matriz de rastreabilidade." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] } } }
+    };
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body class="antialiased">
+
+  <!-- ===================== HEADER / NAV ===================== -->
+  <header class="sticky top-0 z-50 border-b border-slate-700/40 bg-slate-950/70 backdrop-blur-xl">
+    <div class="max-w-[1500px] mx-auto px-4 sm:px-6 py-3 flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-6">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-emerald-400 grid place-items-center shadow-lg shadow-indigo-500/30">
+          <i data-lucide="layers" class="w-5 h-5 text-white"></i>
+        </div>
+        <div class="leading-tight">
+          <div class="text-sm font-extrabold tracking-wide text-white">ArchCorp <span class="text-slate-500 font-semibold">· Arquitetura Corporativa</span></div>
+          <div class="text-[11px] text-slate-400">VarejoTech Omnichannel · Etapa 3 — Projeto TO-BE</div>
+        </div>
+      </div>
+      <nav class="flex gap-1.5 overflow-x-auto scroll-thin lg:ml-auto pb-1 lg:pb-0" aria-label="Navegação principal">
+        <button class="tab-btn active" data-view="view-overview" id="nav-overview"><i data-lucide="gauge" class="w-4 h-4"></i>1 · Visão Geral</button>
+        <button class="tab-btn" data-view="view-simulator" id="nav-simulator"><i data-lucide="workflow" class="w-4 h-4"></i>2 · Simulador Omnichannel</button>
+        <button class="tab-btn" data-view="view-business" id="nav-business"><i data-lucide="monitor-smartphone" class="w-4 h-4"></i>3 · Telas de Negócio</button>
+        <button class="tab-btn" data-view="view-architecture" id="nav-architecture"><i data-lucide="network" class="w-4 h-4"></i>4 · Arquitetura & Rastreabilidade</button>
+      </nav>
+    </div>
+    <div class="shimmer-line"></div>
+  </header>
+
+  <main class="max-w-[1500px] mx-auto px-4 sm:px-6 py-6 sm:py-8">
+
+    <!-- ================================================================
+         VIEW 1 — VISÃO GERAL (AS-IS vs TO-BE)
+         ================================================================ -->
+    <section id="view-overview" class="view active" aria-labelledby="h-overview">
+      <div class="glass p-6 sm:p-9 relative overflow-hidden">
+        <div class="absolute -right-24 -top-24 w-80 h-80 rounded-full bg-indigo-500/20 blur-3xl pointer-events-none"></div>
+        <div class="absolute -left-20 -bottom-28 w-72 h-72 rounded-full bg-emerald-500/15 blur-3xl pointer-events-none"></div>
+        <div class="relative">
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="badge b-info"><i data-lucide="graduation-cap" class="w-3 h-3"></i>Projeto Aplicado de Arquitetura Corporativa</span>
+            <span class="badge b-ok"><i data-lucide="check-circle-2" class="w-3 h-3"></i>Etapa 3 · Arquitetura TO-BE</span>
+          </div>
+          <h1 id="h-overview" class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.1] text-white">
+            VarejoTech Omnichannel —<br /><span class="gradient-text">Arquitetura Corporativa TO-BE</span> (Etapa 3)
+          </h1>
+          <p class="mt-4 max-w-3xl text-slate-300 text-sm sm:text-base">
+            Da operação fragmentada em lotes noturnos para uma arquitetura orientada a eventos, com estoque em tempo real,
+            visão única do cliente e PDV resiliente — conectando Cloud e On-Premise de forma segura.
+          </p>
+          <div class="mt-6 flex flex-wrap gap-3">
+            <button class="btn btn-primary" data-goto="view-simulator" id="cta-simulator"><i data-lucide="play" class="w-4 h-4"></i>Iniciar demonstração ao vivo</button>
+            <button class="btn btn-ghost" data-goto="view-architecture" id="cta-architecture"><i data-lucide="network" class="w-4 h-4"></i>Ver arquitetura</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-5" id="kpi-grid"></div>
+
+      <!-- Comparativo -->
+      <div class="grid lg:grid-cols-[1fr_auto_1fr] gap-5 mt-6 items-stretch">
+        <article class="card-asis rounded-2xl p-6" id="card-asis">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl bg-rose-500/20 border border-rose-400/40 grid place-items-center"><i data-lucide="alert-triangle" class="w-5 h-5 text-rose-300"></i></div>
+            <div>
+              <h2 class="text-lg font-extrabold text-rose-100">AS-IS · Gargalos Atuais</h2>
+              <p class="text-xs text-rose-200/70">Operação fragmentada e dependente de lotes</p>
+            </div>
+          </div>
+          <ul class="space-y-3" id="list-asis"></ul>
+        </article>
+
+        <div class="hidden lg:flex flex-col items-center justify-center gap-2">
+          <div class="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-emerald-400 grid place-items-center shadow-lg shadow-emerald-500/30 animate-float">
+            <i data-lucide="arrow-right" class="w-6 h-6 text-white"></i>
+          </div>
+          <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 [writing-mode:vertical-rl]">Transformação</span>
+        </div>
+
+        <article class="card-tobe rounded-2xl p-6" id="card-tobe">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-400/40 grid place-items-center"><i data-lucide="rocket" class="w-5 h-5 text-emerald-300"></i></div>
+            <div>
+              <h2 class="text-lg font-extrabold text-emerald-100">TO-BE · Solução Proposta</h2>
+              <p class="text-xs text-emerald-200/70">Orientada a eventos, em tempo real e resiliente</p>
+            </div>
+          </div>
+          <ul class="space-y-3" id="list-tobe"></ul>
+        </article>
+      </div>
+
+      <!-- Fluxo de dados -->
+      <div class="glass p-6 mt-6">
+        <div class="flex items-center justify-between flex-wrap gap-3 mb-5">
+          <h2 class="font-extrabold text-white flex items-center gap-2"><i data-lucide="git-branch" class="w-5 h-5 text-indigo-300"></i>Fluxo de dados: como a informação trafega</h2>
+          <div class="flex gap-1 glass-soft p-1" role="tablist" aria-label="Alternar fluxo">
+            <button class="seg-btn active !flex-none !px-4" id="flow-asis" data-flow="asis">AS-IS</button>
+            <button class="seg-btn !flex-none !px-4" id="flow-tobe" data-flow="tobe">TO-BE</button>
+          </div>
+        </div>
+        <div id="flow-view" class="flex flex-wrap items-center gap-2 min-h-[5rem]"></div>
+        <p id="flow-caption" class="text-xs text-slate-400 mt-4"></p>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         VIEW 2 — SIMULADOR OMNICHANNEL
+         ================================================================ -->
+    <section id="view-simulator" class="view" aria-labelledby="h-sim">
+      <div class="flex flex-wrap items-end justify-between gap-3 mb-5">
+        <div>
+          <h1 id="h-sim" class="text-2xl sm:text-3xl font-black text-white">Simulador do Ciclo de Venda Omnichannel</h1>
+          <p class="text-sm text-slate-400 mt-1">Execute uma venda ao vivo e acompanhe cada integração, protocolo e evento da arquitetura TO-BE.</p>
+        </div>
+        <span class="badge b-info"><i data-lucide="presentation" class="w-3 h-3"></i>Modo apresentação</span>
+      </div>
+
+      <!-- Controles -->
+      <div class="glass p-5 grid lg:grid-cols-12 gap-5" id="sim-controls">
+        <div class="lg:col-span-3 space-y-3">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Canal de venda</div>
+          <div class="glass-soft p-1 flex flex-col sm:flex-row lg:flex-col xl:flex-row gap-1" role="radiogroup" aria-label="Canal de venda">
+            <button class="seg-btn active" data-channel="ecom" id="ch-ecom" role="radio" aria-checked="true"><i data-lucide="shopping-cart" class="w-4 h-4"></i>E-commerce SaaS <span class="text-[10px] opacity-70">(Nuvem)</span></button>
+            <button class="seg-btn" data-channel="pdv" id="ch-pdv" role="radio" aria-checked="false"><i data-lucide="store" class="w-4 h-4"></i>PDV Loja Física <span class="text-[10px] opacity-70">(On-Premise)</span></button>
+          </div>
+        </div>
+
+        <div class="lg:col-span-4 grid grid-cols-3 gap-3">
+          <label class="col-span-3 text-[11px] font-bold uppercase tracking-wider text-slate-400">Pedido
+            <select id="sim-product" class="field mt-1.5 normal-case tracking-normal font-medium"></select>
+          </label>
+          <label class="col-span-2 text-[11px] font-bold uppercase tracking-wider text-slate-400">Cliente
+            <select id="sim-customer" class="field mt-1.5 normal-case tracking-normal font-medium"></select>
+          </label>
+          <label class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Qtd.
+            <input id="sim-qty" type="number" min="1" max="20" value="1" class="field mt-1.5" />
+          </label>
+        </div>
+
+        <div class="lg:col-span-3 space-y-3">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Resiliência (RNF-01)</div>
+          <label class="flex items-start gap-3 cursor-pointer" id="lbl-offline">
+            <span class="switch mt-0.5"><input type="checkbox" id="tg-offline" aria-label="Simular queda de rede no PDV" /><span class="track rose"></span></span>
+            <span class="text-xs leading-snug"><b class="text-slate-100">Simular Queda de Rede no PDV</b><br /><span class="text-slate-400">Modo Offline-First (SQLite local)</span></span>
+          </label>
+          <label class="flex items-start gap-3 cursor-pointer">
+            <span class="switch mt-0.5"><input type="checkbox" id="tg-erp" aria-label="Simular manutenção no ERP legado" /><span class="track amber"></span></span>
+            <span class="text-xs leading-snug"><b class="text-slate-100">Simular Manutenção no ERP Legado</b><br /><span class="text-slate-400">Retenção na fila Kafka/RabbitMQ</span></span>
+          </label>
+        </div>
+
+        <div class="lg:col-span-2 flex flex-col gap-2 justify-end">
+          <button class="btn btn-primary w-full" id="btn-run"><i data-lucide="zap" class="w-4 h-4"></i>Executar Venda Omnichannel</button>
+          <div class="flex gap-2">
+            <select id="sim-speed" class="field !py-2 text-xs" aria-label="Velocidade da simulação">
+              <option value="0.6">Lento</option>
+              <option value="1" selected>Normal</option>
+              <option value="2">Rápido</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" id="btn-reset" title="Reiniciar demonstração"><i data-lucide="rotate-ccw" class="w-4 h-4"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Timeline + Logs -->
+      <div class="grid xl:grid-cols-5 gap-5 mt-5">
+        <div class="xl:col-span-3 glass p-5">
+          <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+            <h2 class="font-extrabold text-white flex items-center gap-2"><i data-lucide="activity" class="w-5 h-5 text-indigo-300"></i>Linha do Tempo da Transação</h2>
+            <div class="flex items-center gap-2 text-xs">
+              <span id="order-pill" class="badge b-info hidden"></span>
+              <span id="sim-state" class="badge b-info"><i data-lucide="circle-dot" class="w-3 h-3"></i>Aguardando execução</span>
+            </div>
+          </div>
+          <div id="timeline"></div>
+        </div>
+
+        <div class="xl:col-span-2 glass p-5 flex flex-col">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="font-extrabold text-white flex items-center gap-2"><i data-lucide="terminal" class="w-5 h-5 text-emerald-300"></i>Logs em Tempo Real</h2>
+            <button class="btn btn-ghost btn-sm" id="btn-clear-log"><i data-lucide="eraser" class="w-3.5 h-3.5"></i>Limpar</button>
+          </div>
+          <div id="log" class="console flex-1 min-h-[22rem] max-h-[44rem] py-2" role="log" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <!-- Painéis de infraestrutura -->
+      <div class="grid md:grid-cols-3 gap-5 mt-5">
+        <!-- PDV SQLite -->
+        <div class="glass p-5" id="panel-pdv">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-bold text-white flex items-center gap-2 text-sm"><i data-lucide="database" class="w-4 h-4 text-amber-300"></i>PDV · SQLite Local</h3>
+            <span id="pdv-net" class="node-status ns-ok"><span class="dot"></span>Rede online</span>
+          </div>
+          <div id="sqlite-list" class="space-y-2 min-h-[4.5rem]"></div>
+          <button class="btn btn-emerald btn-sm w-full mt-3 hidden" id="btn-sync"><i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>Restaurar Rede e Sincronizar</button>
+        </div>
+
+        <!-- Broker -->
+        <div class="glass p-5" id="panel-broker">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-bold text-white flex items-center gap-2 text-sm"><i data-lucide="radio-tower" class="w-4 h-4 text-violet-300"></i>Event Broker · Tópicos</h3>
+            <span class="node-status ns-ok"><span class="dot"></span>Cluster ativo</span>
+          </div>
+          <div id="broker-topics" class="space-y-2"></div>
+        </div>
+
+        <!-- ERP -->
+        <div class="glass p-5" id="panel-erp">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-bold text-white flex items-center gap-2 text-sm"><i data-lucide="server" class="w-4 h-4 text-sky-300"></i>ERP Legado · Fila de Faturamento</h3>
+            <span id="erp-net" class="node-status ns-ok"><span class="dot"></span>Online</span>
+          </div>
+          <div id="erp-queue" class="space-y-2 min-h-[4.5rem]"></div>
+          <button class="btn btn-amber btn-sm w-full mt-3 hidden" id="btn-drain"><i data-lucide="play-circle" class="w-3.5 h-3.5"></i>ERP Restabelecido — Drenar Fila</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         VIEW 3 — TELAS DE NEGÓCIO
+         ================================================================ -->
+    <section id="view-business" class="view" aria-labelledby="h-biz">
+      <div class="mb-5">
+        <h1 id="h-biz" class="text-2xl sm:text-3xl font-black text-white">Protótipo das Telas de Negócio</h1>
+        <p class="text-sm text-slate-400 mt-1">Interfaces operacionais da VarejoTech com dados simulados — vendas feitas no simulador aparecem aqui instantaneamente.</p>
+      </div>
+
+      <!-- SAC -->
+      <div class="glass p-5 sm:p-6">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+          <h2 class="font-extrabold text-white flex items-center gap-2"><i data-lucide="headset" class="w-5 h-5 text-indigo-300"></i>Portal Único do SAC · Cliente 360°
+            <span class="badge b-rf">RF-01</span><span class="badge b-rf">RF-04</span></h2>
+          <div class="flex items-center gap-2 text-xs text-slate-400"><i data-lucide="user-round-check" class="w-4 h-4"></i>Atendente: <b class="text-slate-200">Camila R. · SAC Nível 2</b></div>
+        </div>
+
+        <form id="sac-form" class="flex flex-col sm:flex-row gap-3" autocomplete="off">
+          <div class="relative flex-1">
+            <i data-lucide="search" class="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
+            <input id="sac-cpf" class="field !pl-9 !py-2.5 mono" placeholder="Buscar por CPF — 000.000.000-00" inputmode="numeric" maxlength="14" aria-label="CPF do cliente" />
+          </div>
+          <button type="submit" class="btn btn-primary" id="sac-search"><i data-lucide="scan-search" class="w-4 h-4"></i>Consultar Cliente 360°</button>
+        </form>
+        <div class="flex flex-wrap items-center gap-2 mt-3 text-xs text-slate-400">
+          <span>Clientes de exemplo:</span>
+          <span id="sac-samples" class="flex flex-wrap gap-2"></span>
+        </div>
+
+        <div id="sac-result" class="mt-6"></div>
+      </div>
+
+      <!-- Hub de Estoque -->
+      <div class="glass p-5 sm:p-6 mt-6">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <h2 class="font-extrabold text-white flex items-center gap-2"><i data-lucide="boxes" class="w-5 h-5 text-emerald-300"></i>Monitor do Hub de Estoque · Redis
+            <span class="badge b-rf">RF-02</span><span class="badge b-rnf">RNF-02</span></h2>
+          <div class="flex items-center gap-3 text-xs">
+            <span class="node-status ns-ok"><span class="dot animate-blink"></span>Sincronizado · tempo real</span>
+            <span class="text-slate-400">Última atualização: <b id="stock-updated" class="text-slate-200 mono">—</b></span>
+          </div>
+        </div>
+        <div class="grid xl:grid-cols-4 gap-5">
+          <div class="xl:col-span-3 overflow-x-auto scroll-thin rounded-xl border border-slate-700/40">
+            <table class="tbl" aria-label="Estoque unificado">
+              <thead><tr>
+                <th>SKU</th><th>Produto</th><th>Loja Física</th><th>Digital / CD</th><th>Saldo Unificado</th><th>Nível</th><th>Status</th>
+              </tr></thead>
+              <tbody id="stock-body"></tbody>
+            </table>
+          </div>
+          <div>
+            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Comandos Redis (live)</div>
+            <div id="redis-feed" class="console h-[18rem] py-2"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         VIEW 4 — ARQUITETURA & RASTREABILIDADE
+         ================================================================ -->
+    <section id="view-architecture" class="view" aria-labelledby="h-arch">
+      <div class="flex flex-wrap items-end justify-between gap-3 mb-5">
+        <div>
+          <h1 id="h-arch" class="text-2xl sm:text-3xl font-black text-white">Arquitetura em 5 Camadas & Fronteiras</h1>
+          <p class="text-sm text-slate-400 mt-1">Clique em uma camada ou componente. Ambiente Cloud e On-Premise/Edge conectados por túnel seguro.</p>
+        </div>
+        <div class="flex gap-2">
+          <button class="btn btn-ghost btn-sm" id="btn-clear-arch"><i data-lucide="eraser" class="w-3.5 h-3.5"></i>Limpar seleção</button>
+          <button class="btn btn-primary btn-sm" id="btn-animate-flow"><i data-lucide="play" class="w-3.5 h-3.5"></i>Animar fluxo de venda</button>
+        </div>
+      </div>
+
+      <div class="glass p-4 sm:p-5 overflow-x-auto scroll-thin">
+        <div class="arch-grid" id="arch-map"></div>
+      </div>
+
+      <div class="glass p-5 mt-5" id="arch-detail" aria-live="polite"></div>
+
+      <!-- Matriz -->
+      <div class="glass p-5 sm:p-6 mt-6">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <h2 class="font-extrabold text-white flex items-center gap-2"><i data-lucide="table-properties" class="w-5 h-5 text-indigo-300"></i>Matriz de Rastreabilidade · Etapa 2 → Etapa 3</h2>
+          <div class="flex flex-wrap items-center gap-2">
+            <div class="glass-soft p-1 flex gap-1" role="group" aria-label="Filtrar por tipo">
+              <button class="seg-btn active !px-3 !py-1.5" data-req-filter="all" id="rf-all">Todos <span id="cnt-all" class="opacity-70"></span></button>
+              <button class="seg-btn !px-3 !py-1.5" data-req-filter="RF" id="rf-rf">Funcionais <span id="cnt-rf" class="opacity-70"></span></button>
+              <button class="seg-btn !px-3 !py-1.5" data-req-filter="RNF" id="rf-rnf">Não Funcionais <span id="cnt-rnf" class="opacity-70"></span></button>
+            </div>
+            <input id="req-search" class="field !w-48 !py-2" placeholder="Buscar..." aria-label="Buscar requisito" />
+          </div>
+        </div>
+        <div class="overflow-x-auto scroll-thin rounded-xl border border-slate-700/40">
+          <table class="tbl" aria-label="Matriz de rastreabilidade">
+            <thead><tr>
+              <th>ID</th><th>Requisito (Etapa 2)</th><th>Decisão Arquitetural (Etapa 3)</th><th>Componentes</th><th>Camadas</th><th>Validação</th>
+            </tr></thead>
+            <tbody id="matrix-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="max-w-[1500px] mx-auto px-6 pb-8 pt-2 text-center text-[11px] text-slate-500">
+    ArchCorp · Protótipo de apresentação — todos os dados e fluxos são simulados no Frontend (sem backend real).
+  </footer>
+
+  <div id="toasts" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
